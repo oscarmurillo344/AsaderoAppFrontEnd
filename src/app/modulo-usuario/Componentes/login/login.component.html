@@ -1,0 +1,37 @@
+ <div class="fondoLogin">
+  <mat-card class="centrar mat-elevation-z8">
+    <div class="imagen-diseno mat-elevation-z8">
+      <img width="150" src="../../../../assets/imagenes/pollo.webp" alt="Logotipo dañado">
+    </div>
+    <mat-card-header class="d-block text-center">
+       <h2 class="mx-auto mb-2 titulo-login">Asadero de Pollos Andy's</h2>
+    </mat-card-header>
+    <form [formGroup]="UserForm" >
+        <mat-form-field class="w-100" >
+            <mat-label>Usuario</mat-label>
+            <input matInput type="text" placeholder="Ingrese usuario" formControlName="usuario">
+            <a mat-icon-button matSuffix  >
+              <mat-icon>
+                account_circle
+              </mat-icon>
+            </a>
+        </mat-form-field>
+        <mat-form-field  class="w-100 mt-2">
+              <mat-label>password</mat-label>
+              <input matInput (keyup.enter)="LogIn()" placeholder="Ingrese contraseña" [type]="hide ? 'password' : 'text'" formControlName="contrasena"  />
+              <a mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+              <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </a>
+        </mat-form-field>
+          <mat-error *ngIf="Validar" class="mt-1">
+            contrase&ntilde;a o usuario incorrecto
+          </mat-error>
+        </form>
+    <mat-card-actions >
+        <button (click)="LogIn()" mat-raised-button color="warn"class="w-100" >
+          <mat-icon>login</mat-icon>
+          Iniciar Sesi&oacute;n</button>
+    </mat-card-actions>
+</mat-card>
+ </div>
+

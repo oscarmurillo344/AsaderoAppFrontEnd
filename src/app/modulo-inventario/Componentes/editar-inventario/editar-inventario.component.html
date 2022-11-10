@@ -1,0 +1,38 @@
+<table mat-table [dataSource]="ListaInventario"  class="tablainventario">
+
+    <ng-container matColumnDef="Nombre">
+      <th mat-header-cell *matHeaderCellDef> Nombre </th>
+      <td mat-cell *matCellDef="let element "> {{element.producto.nombre}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Cantidad">
+      <th mat-header-cell *matHeaderCellDef> cantidad </th>
+      <td mat-cell *matCellDef="let element "> {{element.cantidadExiste}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Editar">
+      <th mat-header-cell *matHeaderCellDef>  </th>
+      <td mat-cell *matCellDef="let element; index as i"> 
+        <button mat-mini-fab color="warn" (click)="Editar(i)" >
+          <mat-icon>
+            edit
+          </mat-icon>
+        </button>  
+      </td>
+    </ng-container>
+  
+    <!-- Weight Column -->
+    <ng-container matColumnDef="Eliminar">
+      <th mat-header-cell *matHeaderCellDef>  </th>
+      <td mat-cell *matCellDef="let element; index as i"> 
+        <button  mat-mini-fab color="warn" (click)="Eliminar(i)" >
+          <mat-icon>
+            delete
+          </mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>

@@ -1,0 +1,49 @@
+
+  .fondoLogin{
+    position: fixed; /* Sit on top of the page content */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgb(253,29,29);
+    background: linear-gradient(300deg, #c71f1f 0%, #c2501e 50%, #fcb045 100%);
+  }
+  .centrar {
+    margin-top: 120px;
+    background-color: whitesmoke;  
+  }
+
+  .titulo-login {
+    margin-top: -70px;
+    position: relative;
+    width: 40%;
+  }
+
+.imagen-diseno{
+  position: relative;
+  bottom: 70px;
+  margin: auto;
+  border: 1.5px solid rgb(0, 0, 0,0.0.06);
+  background: whitesmoke;
+  width: 150px;
+  height: 99px;
+  border-radius: 50%;
+}
+
+@media screen and (min-width: 500px) {
+  .centrar{
+        margin-left: 15%;
+        margin-right: 15%;
+      }
+}
+
+@media only screen and (max-width: 900px) {
+    .titulo-login {
+      width: 70%;
+    }
+}
+@media only screen and (max-width: 500px) {
+  .titulo-login {
+    width: 100%;
+  }
+}

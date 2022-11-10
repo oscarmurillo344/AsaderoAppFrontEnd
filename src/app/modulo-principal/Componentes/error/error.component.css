@@ -1,0 +1,12 @@
+.imagen {
+  width: auto;
+  max-height: 350px;
+  display: block;
+  margin: auto;
+}
+.contendor-error {
+  width: 80%;
+  margin-top: 50px !important;
+  height: auto;
+  margin: auto;
+}
