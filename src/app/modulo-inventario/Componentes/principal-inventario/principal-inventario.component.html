@@ -1,0 +1,22 @@
+<mat-tab-group mat-stretch-tabs (selectedTabChange)="SeleccionTabChange($event)" 
+                                (selectedIndexChange)="CambioIndexTab($event)" 
+                                [selectedIndex]="PestanaIndex" >
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="mr-2">add_task</mat-icon>
+        Crear Producto
+      </ng-template>
+      <app-crear-inventario (EditordataInventarioEvent)="EditordataInventarioEvent($event)"
+                            [EditordataInventario]="EditordataInventario" ></app-crear-inventario>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="mr-2">edit</mat-icon>
+        Editar y Eliminar
+        <mat-icon class="ml-2">delete_forever</mat-icon>
+      </ng-template>
+      <app-editar-inventario (PestanaEvent)="EditarInventario($event)"></app-editar-inventario>
+    </mat-tab>
+
+  </mat-tab-group>

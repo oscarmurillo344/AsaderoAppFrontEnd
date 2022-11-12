@@ -30,12 +30,12 @@ export class ListaProductoComponent implements OnInit {
 
   sumar(inventario: Inventario): void {
     this.listaInventario.inventario.find((valor, index: number) => valor.producto === inventario.producto ?
-      this.listaInventario.inventario[index].cantidad++ : null)
+      this.listaInventario.inventario[index].cantidad!++ : null)
   }
 
   restar(inventario: Inventario): void {
-    this.listaInventario.inventario.find((valor, index: number) => valor.producto === inventario.producto && valor.cantidad > 1 ?
-      this.listaInventario.inventario[index].cantidad-- : null)
+    this.listaInventario.inventario.find((valor, index: number) => valor.producto === inventario.producto && valor.cantidad! > 1 ?
+      this.listaInventario.inventario[index].cantidad!-- : null)
   }
 
   AgregarCarrito(inventario: Inventario): void {
@@ -58,7 +58,7 @@ export class ListaProductoComponent implements OnInit {
     if (compras.length > 0) {
       this.carrito = compras.map(valor => {
         if (valor.id === inventario.id){
-          valor.cantidad++
+          valor.cantidad!++
           val = false
         }
         return valor

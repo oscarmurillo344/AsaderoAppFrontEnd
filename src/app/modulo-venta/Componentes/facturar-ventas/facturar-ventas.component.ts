@@ -25,7 +25,7 @@ export class FacturarVentasComponent implements OnInit {
   total: number = 0;
   valor: number = 0;
   listaProducto: Array<Inventario>
-  displayedColumns = ['eliminar', 'nombre', 'restar', 'cantidad', 'sumar']
+  displayedColumns = ['eliminar', 'nombre', 'restar', 'cantidad!', 'sumar']
   factura?: Factura;
   listaFacturaItem: Array<FacturaItems>
   numeroFactura: number = 0
@@ -67,7 +67,7 @@ export class FacturarVentasComponent implements OnInit {
       if (this.ValidarPollo()) {
         this.contador = this.listaProducto.length - 1;
         for (let index = 0; index < this.listaProducto.length; index++) {
-          this.listaFacturaItem.push(new FacturaItems(this.listaProducto[index].cantidad,
+          this.listaFacturaItem.push(new FacturaItems(this.listaProducto[index].cantidad!,
             this.listaProducto[index].extras,
             this.listaProducto[index].producto,
             0,
@@ -105,8 +105,8 @@ export class FacturarVentasComponent implements OnInit {
       this.total = 0; this.valor = 0;
 
       for (var i = 0; i < this.listaProducto.length; i++) {
-        this.total += this.listaProducto[i].cantidad;
-        this.valor += (this.listaProducto[i].producto.precio * this.listaProducto[i].cantidad);
+        this.total += this.listaProducto[i].cantidad!;
+        this.valor += (this.listaProducto[i].producto.precio * this.listaProducto[i].cantidad!);
       }
     } else {
       this.total = 0; this.valor = 0;
@@ -119,14 +119,14 @@ export class FacturarVentasComponent implements OnInit {
     this.__Data.Notificacion.emit(1);
   }
   sumar(index: number) {
-    this.listaProducto[index].cantidad++;
+    this.listaProducto[index].cantidad!++;
     this.local.SetStorage('DataCarrito', this.listaProducto);
     this.verificarCarrito();
     this.__Data.Notificacion.emit(1);
   }
   restar(index: number) {
-    if (this.listaProducto[index].cantidad > 1) {
-      this.listaProducto[index].cantidad--;
+    if (this.listaProducto[index].cantidad! > 1) {
+      this.listaProducto[index].cantidad!--;
       this.local.SetStorage('DataCarrito', this.listaProducto);
       this.verificarCarrito();
       this.__Data.Notificacion.emit(1);
@@ -141,7 +141,7 @@ export class FacturarVentasComponent implements OnInit {
   ValidarPollo(): boolean {
     let count: number = 0, estado: boolean = false
     this.listaProducto.forEach(data => {
-      count = data.producto.presa * data.cantidad;
+      count = data.producto.presa * data.cantidad!;
       while (this.polloMerca.presa <= count && this.polloMerca.pollo > 0) {
         this.polloMerca.pollo--
         this.polloMerca.presa += 8

@@ -4,7 +4,7 @@ export interface Inventario {
     id?:number;
     producto:Producto;
     extras:string;
-    cantidad:number;
+    cantidad?:number;
     cantidadExiste:number;
     cantidadTotal:number;
     estado?:boolean
