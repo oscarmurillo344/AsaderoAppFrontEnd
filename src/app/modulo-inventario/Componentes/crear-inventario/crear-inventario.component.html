@@ -1,5 +1,5 @@
 <mat-card class="w-75 mx-auto m-3">
-  <form [formGroup]="ProductForm" (keypress)="cambioFormularioEvent($event)">
+  <form [formGroup]="ProductForm" >
       <mat-form-field class="w-100" >
           <mat-label>Nombre</mat-label>
           <input matInput type="text" formControlName="nombre">
@@ -14,16 +14,33 @@
             <mat-option value="mercaderia">mercaderia</mat-option>
           </mat-select>
         </mat-form-field>
-        <cdk-virtual-scroll-viewport 
-        *ngIf="ProductForm.value.tipo === 'combos'"
-        itemSize="10" 
-        class="contenedor mat-elevation-z2">
-        <mat-label class="margen">Seleccione producto: </mat-label>
-        <mat-checkbox  *ngFor="let producto of ComboInventario"
-        (change)="valueChange($event)" [value]="producto?.id +''" class="margen">
-             {{ producto.producto.nombre }}
-        </mat-checkbox>
-        </cdk-virtual-scroll-viewport>
+        <mat-form-field *ngIf="ProductForm.value.tipo === 'combos'" class="w-100">
+          <mat-label>Eliga productos</mat-label>
+          <mat-chip-list #chipList >
+            <mat-chip
+            *ngFor="let control of itemsProducto"
+            [selectable]="true"
+            [removable]="true"
+            (removed)="remove(control)">
+            {{control.nombre}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+          <input placeholder="Añadir producto"
+                 #inventarioInput
+                 formControlName="itemsProducto"
+                 [matAutocomplete]="autoControlador"
+                 [matChipInputFor]="chipList"
+                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                 [matChipInputAddOnBlur]=true>
+          </mat-chip-list>
+          <mat-autocomplete #autoControlador="matAutocomplete"
+                            (optionSelected) = "SeleccionControl($event)">
+            <mat-option *ngFor="let inventario of ComboInventario" 
+                        [value]="inventario.id">
+              {{inventario.producto.nombre}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
         <mat-form-field *ngIf="BotonCrearEditar == 'Editar'"  class="w-100"  >
           <mat-label>Cantidad Total</mat-label>
           <input matInput type="number" formControlName="cantidad">

@@ -23,6 +23,9 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+
 
 const ModuloMaterial=[
   MatProgressBarModule,
@@ -48,7 +51,9 @@ const ModuloMaterial=[
   MatCheckboxModule,
   MatTooltipModule,
   ScrollingModule,
-  MatSlideToggleModule
+  MatSlideToggleModule,
+  MatChipsModule,
+  MatAutocompleteModule
 ];
 
 @NgModule({
