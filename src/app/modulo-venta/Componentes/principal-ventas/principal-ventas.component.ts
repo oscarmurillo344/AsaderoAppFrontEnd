@@ -34,12 +34,11 @@ export class PrincipalVentasComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.llenarListas()
     if (this.local.GetStorage('DataCarrito')) this.carrito = this.local.GetStorage('DataCarrito');
-    this.__servicioPro.listarpollo()
-      .subscribe((data: updatePollo) => {
-        this._dataMenu.pollo = data.pollo;
-        this._dataMenu.presa = data.presa;
-        this.local.SetStorage("pollos", new updatePollo(this._dataMenu.pollo, this._dataMenu.presa));
-      })
+    this.listarPollos()
+    this.InicializarMenuAndUser()
+  }
+
+  InicializarMenuAndUser(): void {
     this.TiempoFuera = setTimeout(() => {
       if (this.token.getToken() && !this.token.TokenExpirado()) {
         this._dataMenu.AbrirMenu()
@@ -50,6 +49,14 @@ export class PrincipalVentasComponent implements OnInit, OnDestroy {
     })
   }
 
+  listarPollos(): void {
+    this.__servicioPro.listarpollo()
+      .subscribe((data: updatePollo) => {
+        this._dataMenu.SetPollo(data.pollo);
+        this._dataMenu.SetPresa(data.presa)
+        this.local.SetStorage("pollos", { pollo: data.pollo, presa: data.presa});
+      })
+  }
 
   detectarDispositivo(): boolean {
     var valor: boolean = true;
@@ -79,7 +86,7 @@ export class PrincipalVentasComponent implements OnInit, OnDestroy {
       if (valor.producto.tipo != "mercaderia")
         return valor.producto.tipo
       else
-       return null
+        return null
     }))]
     lista.forEach((valor) => {
       if (valor)

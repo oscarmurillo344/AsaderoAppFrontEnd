@@ -15,48 +15,49 @@ import { InventarioService } from '../../Servicios/inventario.service';
 })
 export class IngresarMercaderiaComponent implements OnInit {
 
-  PollosForm:FormGroup;
-  update!:updatePollo;
-  update2!:updatePollo;
-  productLista:Array<Inventario>=new Array();
+  PollosForm: FormGroup;
+  update!: updatePollo;
+  update2!: updatePollo;
+  productLista: Array<Inventario> = new Array();
   constructor(
-    private __serviceinven:InventarioService,
-    private toast:ToastrService,
-    private datas:DataMenuService,
-    private route:Router,
-    private local:LocalstorageService
-  )
-  {
-    this.PollosForm=this.crearForm();
+    private __serviceinven: InventarioService,
+    private toast: ToastrService,
+    private datas: DataMenuService,
+    private route: Router,
+    private local: LocalstorageService
+  ) {
+    this.PollosForm = this.crearForm();
   }
   ngOnInit() {
   }
- crearForm(){
-   return new FormGroup({
-     pollo:new FormControl(0,[Validators.required,Validators.min(0)]),
-     presa:new FormControl(0,[Validators.required,Validators.max(8),Validators.min(0)]),
-     validar:new FormControl()
-   });
- }
+  crearForm() {
+    return new FormGroup({
+      pollo: new FormControl(0, [Validators.required, Validators.min(0)]),
+      presa: new FormControl(0, [Validators.required, Validators.max(8), Validators.min(0)]),
+      validar: new FormControl()
+    });
+  }
 
- ActualizarPollo(){
-   if (this.PollosForm.valid){
-     this.update=new updatePollo(this.PollosForm.value.pollo,
-      this.PollosForm.value.presa)
-      if(!this.PollosForm.value.validar){
+  ActualizarPollo() {
+    if (this.PollosForm.valid) {
+      this.update = {
+        pollo: this.PollosForm.value.pollo,
+        presa: this.PollosForm.value.presa
+      }
+      if (!this.PollosForm.value.validar) {
 
-        this.productLista=this.local.GetStorage("listaProducto");
-        var inventario = this.productLista.find((data:Inventario)=> data.producto?.tipo==='mercaderia' )
-        
-      }else{
+        this.productLista = this.local.GetStorage("listaProducto");
+        var inventario = this.productLista.find((data: Inventario) => data.producto?.tipo === 'mercaderia')
+
+      } else {
         this.__serviceinven.TablePollo(this.update).
-        subscribe(()=> this.route.navigate(["ventas/inicio"]));
-        this.datas.pollo=this.PollosForm.value.pollo;
-        this.datas.presa=this.PollosForm.value.presa;
-        this.toast.success("Pollo actualizado","Exitoso");
+          subscribe(() => this.route.navigate(["ventas/inicio"]));
+        this.datas.pollo = this.PollosForm.value.pollo;
+        this.datas.presa = this.PollosForm.value.presa;
+        this.toast.success("Pollo actualizado", "Exitoso");
         this.PollosForm.reset();
       }
-   }
- }
+    }
+  }
 
 }

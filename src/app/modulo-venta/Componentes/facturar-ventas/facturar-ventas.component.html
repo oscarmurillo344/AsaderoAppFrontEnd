@@ -1,11 +1,11 @@
 <mat-card class="mx-3 mt-3">
     <mat-card-title >Carrito N° {{numeroFactura}} </mat-card-title>
     <mat-card-subtitle class="letra">Subtotal: ({{total}} productos) $ {{valor}} 
-      <a mat-stroked-button color="warn" [routerLink]="['../eliminar']" class="derecha">
+      <a mat-stroked-button color="warn" routerLink="../eliminar" class="derecha">
         <mat-icon>history</mat-icon>
         eliminar factura</a>
     </mat-card-subtitle>
-      <table mat-table [dataSource]="listaProducto" class="w-100">
+      <table mat-table [dataSource]="DataCarrito" class="w-100">
 
         <ng-container matColumnDef="eliminar"  >
           <th mat-header-cell *matHeaderCellDef> </th>
@@ -33,8 +33,8 @@
         </ng-container>
         <ng-container matColumnDef="cantidad" >
           <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let element ;index as i" style="width: 5%;"> 
-            {{element.cantidad}}
+          <td mat-cell *matCellDef="let element" style="width: 5%;"> 
+            {{element.cantidad!}}
        </td>
         </ng-container>
         <ng-container matColumnDef="sumar" >

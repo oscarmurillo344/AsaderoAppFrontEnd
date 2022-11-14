@@ -5,7 +5,6 @@ import { ToastrService } from 'ngx-toastr';
 import { Factura } from '../../Modelos/factura';
 import { PagarService } from '../../Servicios/pagar.service';
 import { FacturaItems } from '../../Modelos/FacturaItems';
-import { ListaProducto } from 'src/app/modulo-inventario/Modelos/lista-producto';
 import { Mensaje } from 'src/app/modulo-principal/Modelos/mensaje';
 import { updatePollo } from 'src/app/modulo-inventario/Modelos/updatePollo';
 import { TokenServiceService } from 'src/app/modulo-principal/Servicios/token-service.service';
@@ -24,14 +23,12 @@ export class FacturarVentasComponent implements OnInit {
 
   total: number = 0;
   valor: number = 0;
-  listaProducto: Array<Inventario>
-  displayedColumns = ['eliminar', 'nombre', 'restar', 'cantidad!', 'sumar']
+  DataCarrito: Array<Inventario> = []
+  displayedColumns = ['eliminar', 'nombre', 'restar', 'cantidad', 'sumar']
   factura?: Factura;
-  listaFacturaItem: Array<FacturaItems>
+  listaFacturaItem: Array<FacturaItems> = []
   numeroFactura: number = 0
-  mms!: Mensaje;
-  contador: number = 0;
-  polloMerca: updatePollo;
+  polloMerca: updatePollo = { pollo: 0, presa: 0 }
   bloqueo?: boolean;
 
   constructor(private __servicioPagar: PagarService,
@@ -40,17 +37,18 @@ export class FacturarVentasComponent implements OnInit {
     private route: Router,
     private __serviceInven: InventarioService,
     private __Data: DataMenuService,
-    private local: LocalstorageService) {
-    this.listaProducto = new Array()
-    this.listaFacturaItem = Array()
-    this.polloMerca = new updatePollo(0, 0)
-  }
+    private local: LocalstorageService) { }
 
   ngOnInit() {
     this.verificarCarrito();
     this.bloqueo = false;
+    this.ObtenerNumeroFactura()
+    this.diaSemana();
+  }
+
+  ObtenerNumeroFactura(): void {
     this.numeroFactura = this.local.GetStorage("nfactura") as number
-    if (this.numeroFactura == undefined) {
+    if (this.numeroFactura == 0) {
       this.__servicioPagar.maximoValor()
         .subscribe((data: number) => {
           this.numeroFactura = data;
@@ -58,31 +56,31 @@ export class FacturarVentasComponent implements OnInit {
           this.local.SetStorage("nfactura", this.numeroFactura)
         }, () => this.numeroFactura = 0)
     }
-    this.diaSemana();
   }
   Facturar(): void {
 
-    if (this.listaProducto.length > 0) {
+    if (this.DataCarrito.length > 0) {
       this.polloMerca = this.local.GetStorage("pollos");
       if (this.ValidarPollo()) {
-        this.contador = this.listaProducto.length - 1;
-        for (let index = 0; index < this.listaProducto.length; index++) {
-          this.listaFacturaItem.push(new FacturaItems(this.listaProducto[index].cantidad!,
-            this.listaProducto[index].extras,
-            this.listaProducto[index].producto,
-            0,
-            this.listaProducto[index].producto.precio))
+        for (let inventario of this.DataCarrito) {
+          this.listaFacturaItem.push({
+            cantidad: inventario.cantidad!,
+            extras: inventario.extras,
+            producto: inventario.producto,
+            Descuento: 0,
+            MontoPago: inventario.producto.precio
+          })
         }
-        this.factura = new Factura(
-          this.numeroFactura,
-          this.token.getUser(),
-          "Efectivo",
-          this.diaSemana(), this.listaFacturaItem);
-
+        this.factura = {
+          numeroFactura: this.numeroFactura,
+          usuarioId: this.token.getUser(),
+          FormaPago: "Efectivo",
+          DiaIngreso: this.diaSemana(),
+          facturaItem: this.listaFacturaItem
+        }
         this.__servicioPagar.pagar(this.factura)
-          .subscribe(data => {
-            this.mms = data;
-            this.mensaje.success(this.mms.mensaje, "Exitoso");
+          .subscribe((data: Mensaje) => {
+            this.mensaje.success(data?.mensaje, "Exitoso");
             this.local.RemoveStorage('DataCarrito');
             this.__serviceInven.TablePollo(this.polloMerca).subscribe(data => null)
             this.local.SetStorage("nfactura", undefined)
@@ -101,33 +99,33 @@ export class FacturarVentasComponent implements OnInit {
   }
   verificarCarrito() {
     if (this.local.GetStorage('DataCarrito')) {
-      this.listaProducto = this.local.GetStorage('DataCarrito');
+      this.DataCarrito = this.local.GetStorage('DataCarrito');
       this.total = 0; this.valor = 0;
 
-      for (var i = 0; i < this.listaProducto.length; i++) {
-        this.total += this.listaProducto[i].cantidad!;
-        this.valor += (this.listaProducto[i].producto.precio * this.listaProducto[i].cantidad!);
+      for (let inventario of this.DataCarrito) {
+        this.total += inventario.cantidad!;
+        this.valor += (inventario.producto.precio * inventario.cantidad!);
       }
     } else {
       this.total = 0; this.valor = 0;
     }
   }
   Eliminar(index: number) {
-    this.listaProducto.splice(index, 1);
-    this.local.SetStorage('DataCarrito', this.listaProducto);
+    this.DataCarrito.splice(index, 1);
+    this.local.SetStorage('DataCarrito', this.DataCarrito);
     this.verificarCarrito();
     this.__Data.Notificacion.emit(1);
   }
   sumar(index: number) {
-    this.listaProducto[index].cantidad!++;
-    this.local.SetStorage('DataCarrito', this.listaProducto);
+    this.DataCarrito[index].cantidad!++;
+    this.local.SetStorage('DataCarrito', this.DataCarrito);
     this.verificarCarrito();
     this.__Data.Notificacion.emit(1);
   }
   restar(index: number) {
-    if (this.listaProducto[index].cantidad! > 1) {
-      this.listaProducto[index].cantidad!--;
-      this.local.SetStorage('DataCarrito', this.listaProducto);
+    if (this.DataCarrito[index].cantidad! > 1) {
+      this.DataCarrito[index].cantidad!--;
+      this.local.SetStorage('DataCarrito', this.DataCarrito);
       this.verificarCarrito();
       this.__Data.Notificacion.emit(1);
     }
@@ -140,7 +138,7 @@ export class FacturarVentasComponent implements OnInit {
 
   ValidarPollo(): boolean {
     let count: number = 0, estado: boolean = false
-    this.listaProducto.forEach(data => {
+    this.DataCarrito.forEach(data => {
       count = data.producto.presa * data.cantidad!;
       while (this.polloMerca.presa <= count && this.polloMerca.pollo > 0) {
         this.polloMerca.pollo--

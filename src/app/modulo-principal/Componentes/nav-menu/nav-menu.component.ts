@@ -21,7 +21,6 @@ export class NavMenuComponent implements OnInit, OnDestroy{
     ListaMenu:Array<MenuLista> = DataMenuLista
     DataCarrito!:Array<ListaProducto>;
     cerrarNav: boolean = false
-    VerCargar = this.cargando.$cargando
     isHandset$: Observable<boolean> = this.breakpointObserver.observe([
     Breakpoints.Medium,
     Breakpoints.Large,
@@ -30,7 +29,11 @@ export class NavMenuComponent implements OnInit, OnDestroy{
       map(result => result.matches),
       shareReplay()
     );
+    VerCargar = this.cargando.$cargando
     VerMenu$ = this._DataMenu.VerMenu
+    NombreUsuario$ = this._DataMenu.NombreUsuario
+    PolloVista$ = this._DataMenu.pollo
+    PresaVista$ = this._DataMenu.presa
     unsubscribe = new Subject<void>()
     TiempoFuera!: NodeJS.Timeout; 
 

@@ -55,7 +55,7 @@ export class ListaProductoComponent implements OnInit {
   verificar(inventario: Inventario): boolean {
     let val: boolean = true;
     let compras = this.local.GetStorage("DataCarrito") as Inventario[]
-    if (compras.length > 0) {
+    if (compras?.length > 0) {
       this.carrito = compras.map(valor => {
         if (valor.id === inventario.id){
           valor.cantidad!++

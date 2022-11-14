@@ -11,8 +11,8 @@ export class DataMenuService {
   NombreUsuario = new EventEmitter<string>()
   MenuLista = new EventEmitter<string[]>()
   EstadoVerMenu:boolean = false
-  pollo: number = 0
-  presa: number = 0
+  pollo = new EventEmitter<number>()
+  presa= new EventEmitter<number>()
 
   constructor() { 
   }
@@ -37,6 +37,14 @@ export class DataMenuService {
 
   SetCambioDispositivo(valor:boolean): void{
   this.CambioDispositivo.next(valor)
+  }
+
+  SetPollo(valor:number): void{
+    this.pollo.next(valor)
+  }
+
+  SetPresa(valor:number): void{
+    this.presa.next(valor)
   }
 
   EstadoMenu(): boolean {
