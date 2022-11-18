@@ -14,7 +14,7 @@ const URLgasto=environment.UrlDesarrollo+"gastos/";
 export class GastosService {
   
   constructor(private http:HttpClient) { }
-
+    
   public Ingresar(nuevo:Gastos): Observable<Mensaje>{
     return this.http.post<Mensaje>(URLgasto+'ingresar',nuevo);
   }

@@ -40,12 +40,7 @@ export class ControlGastosComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    this.__gastos.listen().
-    pipe( takeUntil(this.unsuscribir))
-    .subscribe(data=>{
-      this.inicializarPaginatorGastos()
-      this.getTotalCostosGastos()
-    })
+    
   }
 
   ngOnDestroy(): void {

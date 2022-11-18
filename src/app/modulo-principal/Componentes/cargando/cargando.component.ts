@@ -10,7 +10,8 @@ import { LoadingService } from '../../Servicios/loading.service';
                 src="../../assets/imagenes/pollo.webp" 
                 alt="Logotipo Da&ntilde;ado" 
                 class="imgPollo mx-auto">
-              </div>`
+              </div>`,
+  styleUrls: ["./cargando.component.css"]
 })
 export class CargandoComponent implements OnInit, OnDestroy {
 
@@ -28,7 +29,7 @@ export class CargandoComponent implements OnInit, OnDestroy {
     this.IdInterval = setInterval(()=>{
       (this.numero == this.Colores.length) ? this.numero -= this.Colores.length : this.numero++
         this.color = this.Colores[this.numero]
-      },100)
+      },400)
   }
 
   ngOnDestroy(): void {
