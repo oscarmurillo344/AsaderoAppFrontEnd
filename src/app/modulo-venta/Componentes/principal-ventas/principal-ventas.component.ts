@@ -36,6 +36,7 @@ export class PrincipalVentasComponent implements OnInit, OnDestroy {
     if (this.local.GetStorage('DataCarrito')) this.carrito = this.local.GetStorage('DataCarrito');
     this.listarPollos()
     this.InicializarMenuAndUser()
+    this.__servicioPro.AccionListaInventario.subscribe( data => this.llenarListas(data))
   }
 
   InicializarMenuAndUser(): void {
@@ -54,7 +55,6 @@ export class PrincipalVentasComponent implements OnInit, OnDestroy {
       .subscribe((data: updatePollo) => {
         this._dataMenu.SetPollo(data.pollo);
         this._dataMenu.SetPresa(data.presa)
-        this.local.SetStorage("pollos", { pollo: data.pollo, presa: data.presa});
       })
   }
 
@@ -69,16 +69,15 @@ export class PrincipalVentasComponent implements OnInit, OnDestroy {
     return valor
   }
 
-  llenarListas(): void {
-    if (this.local.GetStorage("listaProducto")) {
+  llenarListas(cache:boolean = true): void {
+   /**  if (this.local.GetStorage("listaProducto")) {
       this.llenarObjetoTabla(this.local.GetStorage("listaProducto") as Array<Inventario>);
-    } else {
-      this.__servicioPro.listarInventartio()
+    } else {*/
+      this.__servicioPro.listarInventartio(cache)
         .subscribe((data: Array<Inventario>) => {
-          this.local.SetStorage("listaProducto", data);
           this.llenarObjetoTabla(data)
         });
-    }
+    //}
   }
 
   llenarObjetoTabla(productoLista: Array<Inventario>): void {

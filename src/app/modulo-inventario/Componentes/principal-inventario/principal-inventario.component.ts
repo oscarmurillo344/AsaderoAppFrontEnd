@@ -14,10 +14,24 @@ export class PrincipalInventarioComponent implements OnInit {
 
   PestanaIndex: number = 0
   EditordataInventario!: Inventario
+  ListaInventario: Array<Inventario> = []
 
-  constructor(private dialogo: MatDialog) { }
+  constructor(private dialogo: MatDialog,
+    private __inventarioService: InventarioService
+    ) { }
 
   ngOnInit(): void {
+    this.CargarListaInventario()
+  }
+
+  CargarListaInventario(Cache:boolean = true) {
+    this.__inventarioService.listarInventartio(Cache).subscribe( (datos:Inventario[]) => {
+      this.ListaInventario = datos
+    })
+  }
+
+  ListaInventarioEvent(evento:boolean){
+    this.CargarListaInventario(evento)
   }
 
   CambioIndexTab(index: number): void {
@@ -47,6 +61,7 @@ export class PrincipalInventarioComponent implements OnInit {
   EditordataInventarioEvent(inventario:Inventario):void {
     this.EditordataInventario = inventario
   }
+  
   EditarInventario(inventario: Inventario): void {
     this.EditordataInventario = inventario
     this.PestanaIndex = 0

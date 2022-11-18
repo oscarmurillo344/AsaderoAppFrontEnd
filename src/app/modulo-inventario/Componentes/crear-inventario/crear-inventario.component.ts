@@ -25,11 +25,11 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
   ProductForm!: FormGroup;
   @Input() EditordataInventario!: Inventario
   @Output() EditordataInventarioEvent = new EventEmitter<Inventario>();
+  @Input() ListaInventario: Array<Inventario> = []
+  @Output() ListaInventarioEvent = new EventEmitter<boolean>();
   @ViewChild('inventarioInput') InventarioInput!: ElementRef<HTMLInputElement>;
-  EditarEvent = new EventEmitter<Event>();
-  ComboInventario: Array<Inventario> = new Array();
-  product!: Producto;
   BotonCrearEditar: string = "Nuevo"
+  ListaInventarioCombo:Inventario[] = []
   itemsProducto: any[] = [];
   private unsuscribir = new Subject<void>();
 
@@ -37,7 +37,6 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
     private mensaje: ToastrService,
     private __inventarioService: InventarioService,
     private __productoService: ProductoListService,
-    private local: LocalstorageService,
     private fb: FormBuilder
   ) {
   }
@@ -59,16 +58,14 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.CrearForm()
-    this.__inventarioService.EventoCargarInventario.pipe(takeUntil(this.unsuscribir)).
-      subscribe(evento => { if (evento == "combo") this.CargarCombo() }
-      );
+    this.EditarCombo()
+  }
+
+  EditarCombo() {
+    this.ListaInventarioCombo = this.ListaInventario.filter((data) => data.producto?.tipo !== 'combos' && data.producto.tipo !== "mercaderia")
   }
 
 
-  CargarCombo() {
-    this.ComboInventario = this.local.GetStorage("listaProducto");
-    this.ComboInventario = this.ComboInventario.filter((data) => data.producto?.tipo !== 'combos' && data.producto.tipo !== "mercaderia")
-  }
 
   CrearForm() {
     this.ProductForm = this.fb.group({
@@ -82,7 +79,7 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
 
   EditarForm(inventario: Inventario) {
     inventario.extras.split(',').forEach(item => {
-      let invent = this.ComboInventario.find(f => f.id == Number(item))
+      let invent = this.ListaInventario.find(f => f.id == Number(item))
       this.itemsProducto.push({
         id: invent?.id,
         nombre: invent?.producto.nombre
@@ -110,7 +107,7 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
 
   SeleccionControl(event: MatAutocompleteSelectedEvent): void {
     let idInventario = event.option.value as number
-    let inventario = this.ComboInventario.find((data: Inventario) => data.id == idInventario)
+    let inventario = this.ListaInventario.find((data: Inventario) => data.id == idInventario)
     if (!this.itemsProducto.find(data => data.id == idInventario)) {
       this.itemsProducto.push({
         id: inventario!.id,
@@ -122,7 +119,7 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
 
   CrearProduct() {
     if (this.ProductForm.valid) {
-      this.product = {
+      let product:Producto = {
         id: 0,
         nombre: this.ProductForm.value.nombre,
         tipo: this.ProductForm.value.tipo,
@@ -131,7 +128,7 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
       }
       let extras = this.itemsProducto.map(d => d.id).toString()
 
-      this.__productoService.nuevoProducto(this.product)
+      this.__productoService.nuevoProducto(product)
         .subscribe((data: Mensaje) => {
           var inventario: Inventario = {
             id: 0,
@@ -145,7 +142,8 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
             this.mensaje.success(data.mensaje, "Exitoso")
             this.ProductForm.reset();
             this.itemsProducto = []
-            this.__inventarioService.EventoCargarInventario.emit("CargarInventario")
+            this.ListaInventarioEvent.emit(false)
+            this.__inventarioService.AccionListaInventario.emit(false)
           });
         })
     }
@@ -177,8 +175,9 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
         this.mensaje.success(data[0].mensaje + ' e ' + data[0].mensaje, "Exitoso");
         this.ProductForm.reset();
         this.itemsProducto = []
-        this.__inventarioService.EventoCargarInventario.emit("CargarInventario")
         this.FormularioResetEvento()
+        this.ListaInventarioEvent.emit(false)
+        this.__inventarioService.AccionListaInventario.emit(false)
       });
     }
   }

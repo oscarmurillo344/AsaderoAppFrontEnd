@@ -35,7 +35,7 @@
           </mat-chip-list>
           <mat-autocomplete #autoControlador="matAutocomplete"
                             (optionSelected) = "SeleccionControl($event)">
-            <mat-option *ngFor="let inventario of ComboInventario" 
+            <mat-option *ngFor="let inventario of ListaInventarioCombo" 
                         [value]="inventario.id">
               {{inventario.producto.nombre}}
             </mat-option>

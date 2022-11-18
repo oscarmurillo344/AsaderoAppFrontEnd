@@ -7,51 +7,40 @@ import { Gastos } from '../Modelos/gastos';
 import { GastosX } from '../Modelos/gastosX';
 
 
-
+const URLgasto=environment.UrlDesarrollo+"gastos/";
 @Injectable({
   providedIn: 'root'
 })
 export class GastosService {
-
-  URLgasto=environment.UrlDesarrollo+"gastos/";
-  private _listen=new Subject<any>();
   
   constructor(private http:HttpClient) { }
 
-  listen():Observable<any>{
-    return this._listen.asObservable();
-      }
-  
-    filter(filterBy:string){
-      this._listen.next(filterBy);
-    }
-    
   public Ingresar(nuevo:Gastos): Observable<Mensaje>{
-    return this.http.post<Mensaje>(this.URLgasto+'ingresar',nuevo);
+    return this.http.post<Mensaje>(URLgasto+'ingresar',nuevo);
   }
 
   public Eliminar(id:number): Observable<Mensaje>{
-    return this.http.delete<Mensaje>(this.URLgasto+'eliminar/'+id);
+    return this.http.delete<Mensaje>(URLgasto+'eliminar/'+id);
   }
 
   public Listar(): Observable<Gastos[]>{
-    return this.http.get<Gastos[]>(this.URLgasto+'lista');
+    return this.http.get<Gastos[]>(URLgasto+'lista');
   }
 
   public ListarTipoFecha(gasto:GastosX): Observable<Gastos[]>{
-    return this.http.post<Gastos[]>(this.URLgasto+'listaTipo/',gasto);
+    return this.http.post<Gastos[]>(URLgasto+'listaTipo/',gasto);
   }
 
   public listarTipoUserFecha(gasto:GastosX): Observable<Gastos[]>{
-    return this.http.post<Gastos[]>(this.URLgasto+'listaTipoUserFecha/',gasto);
+    return this.http.post<Gastos[]>(URLgasto+'listaTipoUserFecha/',gasto);
   }
 
   public listarUserFecha(gasto:GastosX): Observable<Gastos[]>{
-    return this.http.post<Gastos[]>(this.URLgasto+'listaUserFecha/',gasto);
+    return this.http.post<Gastos[]>(URLgasto+'listaUserFecha/',gasto);
   }
 
   public listarFecha(gasto:GastosX): Observable<Gastos[]>{
-    return this.http.post<Gastos[]>(this.URLgasto+'listaFecha/',gasto);
+    return this.http.post<Gastos[]>(URLgasto+'listaFecha/',gasto);
   }
 
 }

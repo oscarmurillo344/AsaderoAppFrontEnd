@@ -7,7 +7,9 @@
         Crear Producto
       </ng-template>
       <app-crear-inventario (EditordataInventarioEvent)="EditordataInventarioEvent($event)"
-                            [EditordataInventario]="EditordataInventario" ></app-crear-inventario>
+                            [EditordataInventario]="EditordataInventario"
+                            [ListaInventario]="ListaInventario"
+                            (ListaInventarioEvent)="ListaInventarioEvent($event)" ></app-crear-inventario>
     </mat-tab>
 
     <mat-tab>
@@ -16,7 +18,9 @@
         Editar y Eliminar
         <mat-icon class="ml-2">delete_forever</mat-icon>
       </ng-template>
-      <app-editar-inventario (PestanaEvent)="EditarInventario($event)"></app-editar-inventario>
+      <app-editar-inventario (PestanaEvent)="EditarInventario($event)"
+                             [ListaInventario]="ListaInventario"
+                             (ListaInventarioEvent)="ListaInventarioEvent($event)"></app-editar-inventario>
     </mat-tab>
 
   </mat-tab-group>
