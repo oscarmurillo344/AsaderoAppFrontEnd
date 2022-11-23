@@ -60,8 +60,9 @@ export class NavMenuComponent implements OnInit, OnDestroy{
           .pipe( takeUntil(this.unsubscribe))
               .subscribe( (data:string[]) => this.ComprobarMenu(data))
     this._DataMenu.Notificacion
-          .pipe( takeUntil(this.unsubscribe))
-              .subscribe(()=>this.verificarNotificacion())
+              .subscribe(()=>{
+                this.verificarNotificacion()
+              })
     this.verificarNotificacion()
     this.Inicializando()
   }

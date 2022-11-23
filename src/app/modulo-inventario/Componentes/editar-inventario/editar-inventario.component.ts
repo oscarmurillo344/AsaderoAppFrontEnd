@@ -4,6 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { DataMenuService } from 'src/app/modulo-principal/Servicios/data-menu.service';
 import { LocalstorageService } from 'src/app/modulo-principal/Servicios/localstorage.service';
 import { DialogoYesNoComponent } from 'src/app/modulo-usuario/Componentes/dialogo-yes-no/dialogo-yes-no.component';
 import { Inventario } from '../../Modelos/inventario';
@@ -26,6 +27,7 @@ export class EditarInventarioComponent implements OnInit, OnDestroy {
 
   constructor(
     private __inventarioService: InventarioService,
+    private _serviceData: DataMenuService,
     private mensaje: ToastrService,
     private dialog: MatDialog) { }
 
@@ -53,10 +55,12 @@ export class EditarInventarioComponent implements OnInit, OnDestroy {
           var idProducto = inventario.id!;
           this.__inventarioService.EliminarInventario(idProducto).
             pipe(takeUntil(this.unsuscribir))
-            .subscribe(data => {
-              this.mensaje.success(data.mensaje, "Exitoso");
-              this.ListaInventarioEvent.emit(false)
-              this.__inventarioService.AccionListaInventario.emit(false)
+            .subscribe({
+              next: data => {
+                this.mensaje.success(data.mensaje, "Exitoso");
+                this.ListaInventarioEvent.emit(false)
+              },
+              complete: () => this._serviceData.AccionListaInventario.emit(false)
             })
         } else {
           resultado.close();

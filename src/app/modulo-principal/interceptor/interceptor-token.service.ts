@@ -27,7 +27,7 @@ export class InterceptorTokenService implements HttpInterceptor {
       }
      })
    }else{
-    const credenciales=btoa('AngularVentasAsadero'+':'+'Andy$_2003_$')
+    const credenciales= btoa('AngularVentasAsadero'+':'+'Andy$_2003_$')
     intreq = req.clone({
      setHeaders:{
       "Content-Type": "application/x-www-form-urlencoded",

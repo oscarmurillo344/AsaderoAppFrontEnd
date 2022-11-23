@@ -82,7 +82,7 @@ export class FacturarVentasComponent implements OnInit {
           .subscribe((data: Mensaje) => {
             this.mensaje.success(data?.mensaje, "Exitoso");
             this.local.RemoveStorage('DataCarrito');
-            this.__serviceInven.TablePollo(this.polloMerca).subscribe(data => null)
+            this.__serviceInven.IngresarPolloView(this.polloMerca).subscribe(data => null)
             this.local.SetStorage("nfactura", undefined)
             this.__Data.Notificacion.emit(1);
             this.route.navigate(['/inicio']);

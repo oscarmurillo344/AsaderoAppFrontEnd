@@ -12,6 +12,7 @@ import { LocalstorageService } from 'src/app/modulo-principal/Servicios/localsto
 import { Mensaje } from 'src/app/modulo-principal/Modelos/mensaje';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatTableDataSource } from '@angular/material/table';
+import { DataMenuService } from 'src/app/modulo-principal/Servicios/data-menu.service';
 
 @Component({
   selector: 'app-crear-inventario',
@@ -35,8 +36,9 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
 
   constructor(
     private mensaje: ToastrService,
-    private __inventarioService: InventarioService,
-    private __productoService: ProductoListService,
+    private _serviceData:DataMenuService,
+    private _inventarioService: InventarioService,
+    private _productoService: ProductoListService,
     private fb: FormBuilder
   ) {
   }
@@ -128,7 +130,7 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
       }
       let extras = this.itemsProducto.map(d => d.id).toString()
 
-      this.__productoService.nuevoProducto(product)
+      this._productoService.nuevoProducto(product)
         .subscribe((data: Mensaje) => {
           var inventario: Inventario = {
             id: 0,
@@ -138,12 +140,14 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
             cantidadExiste: 0,
             cantidadTotal: 0
           }
-          this.__inventarioService.ingresarInventario(inventario).subscribe((data: Mensaje) => {
-            this.mensaje.success(data.mensaje, "Exitoso")
-            this.ProductForm.reset();
-            this.itemsProducto = []
-            this.ListaInventarioEvent.emit(false)
-            this.__inventarioService.AccionListaInventario.emit(false)
+          this._inventarioService.ingresarInventario(inventario).subscribe({
+            next:(data: Mensaje) => {
+              this.mensaje.success(data.mensaje, "Exitoso")
+              this.ProductForm.reset();
+              this.itemsProducto = []
+              this.ListaInventarioEvent.emit(false)
+            },
+            complete: () => this._serviceData.AccionListaInventario.emit(false)
           });
         })
     }
@@ -162,22 +166,24 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
       }
       let extras = this.itemsProducto.map(d => d.id).toString()
 
-      forkJoin(this.__productoService.ActualizarProducto(producto),
-        this.__inventarioService.UpdateInventario({
+      forkJoin([this._productoService.ActualizarProducto(producto),
+        this._inventarioService.editarInventario({
           id: idInventario,
           producto,
           extras: extras,
           cantidad: this.ProductForm.value.cantidad,
           cantidadExiste: this.ProductForm.value.cantidad,
           cantidadTotal: this.ProductForm.value.cantidad
-        })
-      ).subscribe((data: [Mensaje, any]) => {
-        this.mensaje.success(data[0].mensaje + ' e ' + data[0].mensaje, "Exitoso");
-        this.ProductForm.reset();
-        this.itemsProducto = []
-        this.FormularioResetEvento()
-        this.ListaInventarioEvent.emit(false)
-        this.__inventarioService.AccionListaInventario.emit(false)
+        })]
+      ).subscribe({
+        next:(data: [Mensaje, any]) => {
+          this.mensaje.success(data[0].mensaje + ' e ' + data[0].mensaje, "Exitoso");
+          this.ProductForm.reset();
+          this.itemsProducto = []
+          this.FormularioResetEvento()
+          this.ListaInventarioEvent.emit(false)
+        },
+        complete: () => this._serviceData.AccionListaInventario.emit(false)
       });
     }
   }

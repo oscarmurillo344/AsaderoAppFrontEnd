@@ -20,9 +20,9 @@ export class PrincipalVentasComponent implements OnInit, OnDestroy {
   TiempoFuera!: NodeJS.Timeout
 
   constructor(
-    private __servicioPro: InventarioService,
+    private __servicioInventario: InventarioService,
     private token: TokenServiceService,
-    private _dataMenu: DataMenuService,
+    private _serviceData: DataMenuService,
     private local: LocalstorageService,
   ) {
   }
@@ -32,29 +32,30 @@ export class PrincipalVentasComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.llenarListas()
+    this._serviceData.AccionListaInventario.subscribe((data) => this.llenarListas(data))
+    this._serviceData.AccionListaPollo.subscribe((data) => this.listarPollos(data))
+    this.llenarListas(true)
+    this.listarPollos(true)
     if (this.local.GetStorage('DataCarrito')) this.carrito = this.local.GetStorage('DataCarrito');
-    this.listarPollos()
     this.InicializarMenuAndUser()
-    this.__servicioPro.AccionListaInventario.subscribe( data => this.llenarListas(data))
   }
 
   InicializarMenuAndUser(): void {
     this.TiempoFuera = setTimeout(() => {
       if (this.token.getToken() && !this.token.TokenExpirado()) {
-        this._dataMenu.AbrirMenu()
-        this._dataMenu.SetCambioDispositivo(this.detectarDispositivo())
+        this._serviceData.AbrirMenu()
+        this._serviceData.SetCambioDispositivo(this.detectarDispositivo())
       }
-      this._dataMenu.SetNombreUsuario(this.token.getUser());
-      this._dataMenu.SetMenuLista(this.token.getAuth())
+      this._serviceData.SetNombreUsuario(this.token.getUser());
+      this._serviceData.SetMenuLista(this.token.getAuth())
     })
   }
 
-  listarPollos(): void {
-    this.__servicioPro.listarpollo()
+  listarPollos(conCache: boolean): void {
+    this.__servicioInventario.listarpollo(conCache)
       .subscribe((data: updatePollo) => {
-        this._dataMenu.SetPollo(data.pollo);
-        this._dataMenu.SetPresa(data.presa)
+        this._serviceData.SetPollo(data.pollo);
+        this._serviceData.SetPresa(data.presa)
       })
   }
 
@@ -69,15 +70,11 @@ export class PrincipalVentasComponent implements OnInit, OnDestroy {
     return valor
   }
 
-  llenarListas(cache:boolean = true): void {
-   /**  if (this.local.GetStorage("listaProducto")) {
-      this.llenarObjetoTabla(this.local.GetStorage("listaProducto") as Array<Inventario>);
-    } else {*/
-      this.__servicioPro.listarInventartio(cache)
-        .subscribe((data: Array<Inventario>) => {
-          this.llenarObjetoTabla(data)
-        });
-    //}
+  llenarListas(cache: boolean): void {
+    this.__servicioInventario.listarInventartio(cache)
+      .subscribe((data: Array<Inventario>) => {
+        this.llenarObjetoTabla(data)
+      });
   }
 
   llenarObjetoTabla(productoLista: Array<Inventario>): void {

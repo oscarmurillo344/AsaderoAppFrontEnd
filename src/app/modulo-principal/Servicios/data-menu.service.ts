@@ -1,18 +1,20 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataMenuService {
 
-  VerMenu = new EventEmitter<boolean>()
-  CambioDispositivo = new EventEmitter<boolean>()
-  Notificacion = new EventEmitter<number>()
-  NombreUsuario = new EventEmitter<string>()
-  MenuLista = new EventEmitter<string[]>()
+  @Output() VerMenu = new EventEmitter<boolean>()
+  @Output() CambioDispositivo = new EventEmitter<boolean>()
+  @Output() Notificacion = new EventEmitter<number>()
+  @Output() NombreUsuario = new EventEmitter<string>()
+  @Output() MenuLista = new EventEmitter<string[]>()
+  @Output() pollo = new EventEmitter<number>()
+  @Output() presa = new EventEmitter<number>()
+  @Output() AccionListaInventario = new EventEmitter<boolean>()
+  @Output() AccionListaPollo = new EventEmitter<boolean>()
   EstadoVerMenu:boolean = false
-  pollo = new EventEmitter<number>()
-  presa= new EventEmitter<number>()
 
   constructor() { 
   }

@@ -28,8 +28,14 @@
             <mat-icon>account_circle</mat-icon>
           </mat-panel-description>
         </mat-expansion-panel-header>
-        Pollos: {{ PolloVista$ | async }}
-        Presa: {{ PresaVista$ | async }}
+        <div class="vistaPollo">
+          Pollos: {{ PolloVista$ | async }}
+          Presa: {{ PresaVista$ | async }}
+          <button mat-raised-button routerLink="inventario/actualizar" (click)="!cerrarNav ? sidenav.toggle() : ''" class="w-100 mt-2" color="warn">
+            <mat-icon>add</mat-icon>
+            Agregar
+          </button>
+        </div>
       </mat-expansion-panel>
       <ng-container *ngFor="let menu of ListaMenu">
         <mat-list-item *ngIf="menu?.default" [routerLink]="menu.ruta" (click)="!cerrarNav ? sidenav.toggle() : ''"

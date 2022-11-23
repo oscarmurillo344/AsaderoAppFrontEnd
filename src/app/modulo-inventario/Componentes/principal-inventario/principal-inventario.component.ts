@@ -4,6 +4,7 @@ import { Inventario } from '../../Modelos/inventario';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogoYesNoComponent } from 'src/app/modulo-usuario/Componentes/dialogo-yes-no/dialogo-yes-no.component';
 import { InventarioService } from '../../Servicios/inventario.service';
+import { DataMenuService } from 'src/app/modulo-principal/Servicios/data-menu.service';
 
 @Component({
   selector: 'app-principal-inventario',
@@ -17,14 +18,16 @@ export class PrincipalInventarioComponent implements OnInit {
   ListaInventario: Array<Inventario> = []
 
   constructor(private dialogo: MatDialog,
-    private __inventarioService: InventarioService
+    private __inventarioService: InventarioService,
+    private _serviceData:DataMenuService
     ) { }
 
   ngOnInit(): void {
-    this.CargarListaInventario()
+    this.CargarListaInventario(true)
+    this._serviceData.AccionListaInventario.subscribe(data => this.CargarListaInventario(data))
   }
 
-  CargarListaInventario(Cache:boolean = true) {
+  CargarListaInventario(Cache:boolean) {
     this.__inventarioService.listarInventartio(Cache).subscribe( (datos:Inventario[]) => {
       this.ListaInventario = datos
     })
