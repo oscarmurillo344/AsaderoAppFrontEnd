@@ -1,11 +1,10 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DataMenuService } from 'src/app/modulo-principal/Servicios/data-menu.service';
-import { LocalstorageService } from 'src/app/modulo-principal/Servicios/localstorage.service';
 import { DialogoYesNoComponent } from 'src/app/modulo-usuario/Componentes/dialogo-yes-no/dialogo-yes-no.component';
 import { Inventario } from '../../Modelos/inventario';
 import { InventarioService } from '../../Servicios/inventario.service';

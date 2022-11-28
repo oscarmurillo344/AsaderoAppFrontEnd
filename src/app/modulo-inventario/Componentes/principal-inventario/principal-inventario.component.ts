@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { Inventario } from '../../Modelos/inventario';
 import { MatDialog } from '@angular/material/dialog';
@@ -27,7 +27,7 @@ export class PrincipalInventarioComponent implements OnInit {
     this._serviceData.AccionListaInventario.subscribe(data => this.CargarListaInventario(data))
   }
 
-  CargarListaInventario(Cache:boolean) {
+  CargarListaInventario(Cache:boolean) {      
     this.__inventarioService.listarInventartio(Cache).subscribe( (datos:Inventario[]) => {
       this.ListaInventario = datos
     })

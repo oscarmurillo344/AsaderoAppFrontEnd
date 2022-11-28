@@ -1,17 +1,14 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { Inventario } from 'src/app/modulo-inventario/Modelos/inventario';
 import { InventarioService } from 'src/app/modulo-inventario/Servicios/inventario.service';
 import { forkJoin, Subject } from 'rxjs';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { takeUntil } from 'rxjs/operators';
 import { Producto } from '../../Modelos/producto';
 import { ProductoListService } from '../../Servicios/producto-list.service';
-import { LocalstorageService } from 'src/app/modulo-principal/Servicios/localstorage.service';
 import { Mensaje } from 'src/app/modulo-principal/Modelos/mensaje';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatTableDataSource } from '@angular/material/table';
 import { DataMenuService } from 'src/app/modulo-principal/Servicios/data-menu.service';
 
 @Component({
@@ -44,11 +41,12 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
   }
   ngOnChanges(changes: SimpleChanges): void {
     this.itemsProducto = []
-    if (this.EditordataInventario?.producto?.nombre.length > 0) {
+    if (changes["EditordataInventario"]?.currentValue) {
       this.EditarForm(this.EditordataInventario)
       this.BotonCrearEditar = "Editar"
     } else {
       this.CrearForm()
+      this.EditarCombo()
       this.BotonCrearEditar = "Nuevo"
     }
   }
@@ -73,7 +71,7 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
     this.ProductForm = this.fb.group({
       nombre: ['', Validators.required],
       tipo: ['', Validators.required],
-      itemsProducto: [""],
+      itemsProducto: [],
       precio: ['', Validators.required],
       presa: ['', [Validators.required, Validators.pattern('^[0-9]+')]]
     });
