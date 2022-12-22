@@ -1,4 +1,4 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
@@ -23,62 +23,61 @@ import { Usuario } from 'src/app/modulo-usuario/Modelos/Usuario';
 })
 export class ControlventasComponent implements OnInit {
 
-  @ViewChild(MatPaginator,{static:false}) paginatorVentas!: MatPaginator;
-  VentasColumns: string[] = ['No', 'Producto', 'Cantidad','Precio']
+  @ViewChild(MatPaginator, { static: false }) paginatorVentas!: MatPaginator;
+  VentasColumns: string[] = ['No', 'Producto', 'Cantidad', 'Precio']
   DataVentas!: MatTableDataSource<VentasDay>;
-  valor:number=0;
-  selected:number=0;
-  vista_dia:boolean=false
-  vista_fecha:boolean=false
-  ListaUser:Observable<Usuario[]>
-  fechas!:EntreFecha;
-  UserForm:FormGroup;
-  cerrado!:boolean;
-  complete:boolean=true;
-  gastosX!:GastosX;
-  valorGasto:number=0;
+  valor: number = 0;
+  vista_dia: boolean = false
+  vista_fecha: boolean = false
+  ListaUser: Observable<Usuario[]>
+  fechas!: EntreFecha;
+  UserForm: FormGroup;
+  cerrado!: boolean;
+  gastosX!: GastosX;
+  valorGasto: number = 0;
   private unsuscribir = new Subject<void>()
-  semana:string[];
-  diaSelect:string[]=[];
+  semana: string[];
+  diaSeleccion: string[] = [];
+
   constructor(
-    private usuario:AuthService,
-    private __factura:PagarService,
-    private __gastos:GastosService,
-    private toast:ToastrService,
-    public dialogo:MatDialog
-  ) { 
-    this.UserForm=this.crearFormMain()
+    private usuario: AuthService,
+    private __factura: PagarService,
+    private __gastos: GastosService,
+    private toast: ToastrService,
+    public dialogo: MatDialog
+  ) {
+    this.UserForm = this.crearFormMain()
     this.ListaUser = this.usuario.ListarUsuario()
-    this.semana=['lunes','martes','miercoles','jueves','viernes','sábado','domingo'];
+    this.semana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sábado', 'domingo'];
   }
 
-  crearFormMain(){
-    return  new FormGroup({
-      Seleccion: new FormControl('',Validators.required),
-      usuario: new FormControl('',Validators.required),
-      start:new FormControl(new Date(),Validators.required),
-      end: new FormControl(new Date(),Validators.required)
+  crearFormMain() {
+    return new FormGroup({
+      Seleccion: new FormControl('', Validators.required),
+      usuario: new FormControl('', Validators.required),
+      start: new FormControl(new Date(), Validators.required),
+      end: new FormControl(new Date(), Validators.required)
     });
   }
- 
 
-  select(event:any){
+
+  select(event: string) {
     switch (event) {
       case 'semanas':
-        this.vista_fecha=true
-        this.vista_dia=false
+        this.vista_fecha = true
+        this.vista_dia = false
         break;
       case 'semanas-dia':
-        this.vista_dia=true
+        this.vista_dia = true
         break;
       default:
-        this.vista_fecha=false
-        this.vista_dia=false
+        this.vista_fecha = false
+        this.vista_dia = false
         break;
     }
   }
   ngOnInit() {
-   
+
   }
 
   ngOnDestroy(): void {
@@ -86,130 +85,129 @@ export class ControlventasComponent implements OnInit {
     this.unsuscribir.complete();
   }
 
-  public diaSeleccion(event:any):void{
-    if(event.checked){
-      this.diaSelect.push(event.source.value)
-    }else{
-      this.diaSelect.forEach((data:string,i:number)=> data==event.source.value ? this.diaSelect.splice(i,1) : null)
+  public SeleccionCheck(event: any): void {
+    if (event.checked) {
+      this.diaSeleccion.push(event.source.value)
+    } else {
+      this.diaSeleccion = this.diaSeleccion.filter(d => d != event)
     }
   }
-   
-    getTotalCostVentas():void{
-      this.valor=0;
-      this.DataVentas.data.forEach(ele => this.valor=this.valor+(ele.cantidad*ele.precio))
-    }
 
-    inicializarPaginatorVentas():void{
-      setTimeout(()=>this.DataVentas.paginator=this.paginatorVentas);
-    }
+  getTotalCostVentas(): void {
+    this.valor = 0;
+    this.DataVentas.data.forEach(ele => this.valor = this.valor + (ele.cantidad * ele.precio))
+  }
 
-    ExportarExcel():void{
-      if(this.DataVentas!==undefined){
-        let array:any[]=this.DataVentas.data
-        array.forEach(element=>element.precio=element.cantidad*element.precio)
-        let respuesta=this.dialogo.open(ExportarComponent,
-        {data:{datos:array,fechaInicio: this.UserForm.value.start,fechaFinal:this.UserForm.value.end}})
-        respuesta.afterClosed().
-        pipe( takeUntil(this.unsuscribir)).
-        subscribe(data=>respuesta.close());
-      }else{
-        this.toast.warning("No existen datos","Advertencia");
-      }
-    }
+  inicializarPaginatorVentas(): void {
+    setTimeout(() => this.DataVentas.paginator = this.paginatorVentas);
+  }
 
-  ListarVentas():void{
-    if(this.UserForm.valid){
-      this.cerrado=false;
-      this.complete=false;
-      if (this.UserForm.value.Seleccion === 'dia' && this.UserForm.value.usuario != 'todos') {
-          this.__factura.TotalDay(this.UserForm.value.usuario).
-          pipe( takeUntil(this.unsuscribir)).
-          subscribe((data:VentasDay[])=>{
-            this.DataVentas=new MatTableDataSource(data);
+  ExportarExcel(): void {
+    if (this.DataVentas !== undefined) {
+      let array: any[] = this.DataVentas.data
+      array.forEach(element => element.precio = element.cantidad * element.precio)
+      let respuesta = this.dialogo.open(ExportarComponent,
+        { data: { datos: array, fechaInicio: this.UserForm.value.start, fechaFinal: this.UserForm.value.end } })
+      respuesta.afterClosed().
+        pipe(takeUntil(this.unsuscribir)).
+        subscribe(data => respuesta.close());
+    } else {
+      this.toast.warning("No existen datos", "Advertencia");
+    }
+  }
+
+  ListarVentas(): void {
+    if (this.UserForm.valid) {
+      this.cerrado = false;
+      this.fechas = new EntreFecha(this.UserForm.value.usuario,
+        this.UserForm.value.start, this.UserForm.value.end, this.diaSeleccion.toString())
+
+      if (this.UserForm.value.Seleccion === 'hoy' && this.UserForm.value.usuario === 'todos') {
+        this.__factura.TotalDia().
+          pipe(takeUntil(this.unsuscribir)).
+          subscribe((data: VentasDay[]) => {
+            this.DataVentas = new MatTableDataSource(data);
             this.inicializarPaginatorVentas();
-            this.toast.success("Consulta Exitosa","Exito");
+            this.toast.success("Consulta Exitosa", "Exito");
             this.getTotalCostVentas();
-            this.complete=true;
-          },error=>{
-            this.mesajeError(error)
-             this.complete=true;
-          })      
-      }else {
-          this.fechas=new EntreFecha(this.UserForm.value.usuario,
-            this.UserForm.value.start,this.UserForm.value.end,this.diaSelect.toString())
-           if(this.UserForm.value.usuario != 'todos'){
-             if(this.diaSelect.length){
-              this.__factura.TotalUserFechaDia(this.fechas)
-              .subscribe((data:VentasDay[])=>{
-                this.DataVentas=new MatTableDataSource(data);
-                this.inicializarPaginatorVentas();
-                this.toast.success("Consulta Exitosa","Exito");
-                this.getTotalCostVentas();
-                this.complete=true;
-              },error=>{
-                this.mesajeError(error)
-                this.complete=true;
-              })
-             }else{
-              this.__factura.TotalFechasUser(this.fechas).
-              subscribe((data:VentasDay[])=>{
-                this.DataVentas=new MatTableDataSource(data);
-                this.inicializarPaginatorVentas();
-                this.toast.success("Consulta Exitosa","Exito");
-                this.getTotalCostVentas();
-                this.complete=true;
-                },error=>this.mesajeError(error))
-             }
-           }else{
-            if(this.diaSelect){
-              this.__factura.TotalFechaDia(this.fechas).
-              subscribe((data:VentasDay[])=>{
-                this.DataVentas=new MatTableDataSource(data);
-                this.inicializarPaginatorVentas();
-                this.toast.success("Consulta Exitosa","Exito");
-                this.getTotalCostVentas();
-                this.complete=true;
-              },error=>this.mesajeError(error))
-            }else{
-              this.__factura.TotalFechas(this.fechas).
-              pipe( takeUntil(this.unsuscribir))
-              .subscribe((data:VentasDay[])=>{
-                this.DataVentas=new MatTableDataSource(data);
-                this.inicializarPaginatorVentas();
-                this.toast.success("Consulta Exitosa","Exito");
-                this.getTotalCostVentas();
-                this.complete=true;
-                },error=>this.mesajeError(error))
-              }
-           }
+          })
       }
+
+      if (this.UserForm.value.Seleccion === 'hoy' && this.UserForm.value.usuario !== 'todos') {
+        let usuario = this.UserForm.value.usuario
+        this.__factura.TotalDiaUsuario(usuario).
+          pipe(takeUntil(this.unsuscribir)).
+          subscribe((data: VentasDay[]) => {
+            this.DataVentas = new MatTableDataSource(data);
+            this.inicializarPaginatorVentas();
+            this.toast.success("Consulta Exitosa", "Exito");
+            this.getTotalCostVentas();
+          })
+      }
+
+      if (this.UserForm.value.Seleccion === 'semanas' && this.UserForm.value.usuario !== 'todos') {
+          this.__factura.TotalFechasUser(this.fechas).
+          subscribe((data: VentasDay[]) => {
+            this.DataVentas = new MatTableDataSource(data);
+            this.inicializarPaginatorVentas();
+            this.toast.success("Consulta Exitosa", "Exito");
+            this.getTotalCostVentas();
+          })
+      }
+
+      if (this.UserForm.value.Seleccion === 'semanas' && this.UserForm.value.usuario === 'todos') {
+        this.__factura.TotalFechas(this.fechas).
+        pipe(takeUntil(this.unsuscribir))
+        .subscribe((data: VentasDay[]) => {
+          this.DataVentas = new MatTableDataSource(data);
+          this.inicializarPaginatorVentas();
+          this.toast.success("Consulta Exitosa", "Exito");
+          this.getTotalCostVentas();
+        })
+      }
+
+      if (this.UserForm.value.Seleccion == 'semanas-dia' && this.UserForm.value.usuario !== 'todos') {
+        this.__factura.TotalUserFechaDia(this.fechas)
+        .subscribe((data: VentasDay[]) => {
+          this.DataVentas = new MatTableDataSource(data);
+          this.inicializarPaginatorVentas();
+          this.toast.success("Consulta Exitosa", "Exito");
+          this.getTotalCostVentas();
+        })
+      }
+
+      if (this.UserForm.value.Seleccion == 'semanas-dia' && this.UserForm.value.usuario == 'todos') {
+        this.__factura.TotalFechaDia(this.fechas)
+        .subscribe((data: VentasDay[]) => {
+          this.DataVentas = new MatTableDataSource(data);
+          this.inicializarPaginatorVentas();
+          this.toast.success("Consulta Exitosa", "Exito");
+          this.getTotalCostVentas();
+        })
+      }
+
       this.ListarGastos();
-    }
-  }
+    } 
+}
 
 
-  ListarGastos():void{
-    this.gastosX=new GastosX( this.UserForm.value.usuario,'',this.UserForm.value.start,this.UserForm.value.end)
-    if(this.UserForm.value.usuario === 'todos'){
-      this.__gastos.listarFecha(this.gastosX).
-      subscribe((gasto:Gastos[])=>{
+ListarGastos(): void {
+  this.gastosX = new GastosX(this.UserForm.value.usuario, '', this.UserForm.value.start, this.UserForm.value.end)
+    if(this.UserForm.value.usuario === 'todos') {
+  this.__gastos.listarFecha(this.gastosX).
+    subscribe((gasto: Gastos[]) => {
       this.getTotalGastos(gasto);
-      },error=>this.mesajeError(error))
-    }else if(this.UserForm.value.usuario !== 'todos'){
-      this.__gastos.listarUserFecha(this.gastosX).
-      subscribe((gasto:Gastos[])=>{
-        this.getTotalGastos(gasto);
-      },error=>this.mesajeError(error))
-    }
-    
-  }  
-  getTotalGastos(Dato:Array<any>):void{
-    this.valorGasto=0;
-    Dato.forEach(ele =>this.valorGasto=this.valorGasto+ele.valor)
-  }
-  mesajeError(error:any){
-    if(error.error.mensaje != undefined)this.toast.error("Error "+error.error.mensaje,"Error")
-        else this.toast.error("Error en la conulta","Error")
-  }
+    })
+} else if (this.UserForm.value.usuario !== 'todos') {
+  this.__gastos.listarUserFecha(this.gastosX).
+    subscribe((gasto: Gastos[]) => {
+      this.getTotalGastos(gasto);
+    })
+}
 
+  }
+getTotalGastos(Dato: Array<any>): void {
+  this.valorGasto = 0;
+  Dato.forEach(ele => this.valorGasto = this.valorGasto + ele.valor)
+}
 }

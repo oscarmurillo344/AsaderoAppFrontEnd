@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Mensaje } from 'src/app/modulo-principal/Modelos/mensaje';
 import { Factura } from '../../Modelos/factura';
+import { FacturaItems } from '../../Modelos/FacturaItems';
+import { FacturaDTO } from '../../Modelos/FaturaDTO';
 import { PagarService } from '../../Servicios/pagar.service';
 
 @Component({
@@ -11,17 +14,17 @@ import { PagarService } from '../../Servicios/pagar.service';
 })
 export class EliminarVentasComponent implements OnInit {
 
-  ListaFactura:Array<Factura>;
-  displayedColumns=['Nombre','Cantidad','Fecha','Hora'];
+  ListaFactura!:MatTableDataSource<FacturaItems>;
+  factura!:FacturaDTO;
+  displayedColumns=['Cantidad','Nombre','PrecioUnitario', 'PrecioTotal'];
   numeroFact:number=0;
   bloqueo:boolean=true;
 
   constructor(
-    private __servicioPago:PagarService,
+    private __servicioPago:PagarService,  
     private toast:ToastrService,
     private route:Router
   ) {
-    this.ListaFactura=new Array()
   }
 
   ngOnInit() {
@@ -32,25 +35,22 @@ export class EliminarVentasComponent implements OnInit {
       this.__servicioPago.listar(this.numeroFact)
       .subscribe(
         (data:any)=>{
-       if(data.mensaje===undefined){
-            this.ListaFactura=data;
+            this.ListaFactura = new MatTableDataSource(data.facturaItem);
+            this.factura = data
             this.bloqueo=false;
-            this.toast.success("factura encontrada","Exitoso");
-          }else{
-            this.toast.error("factura no encontrada","Exitoso");
-          }
-
         });
     }else{
       this.toast.info("numero no valido","Error");
     }
   }
+
   Eliminar():void{
     if(this.numeroFact!==0){
       this.__servicioPago.eliminar(this.numeroFact)
       .subscribe((data:Mensaje)=>{
         this.toast.success(data.mensaje,"Exitoso");
         this.bloqueo=false;
+        this.ListaFactura = new MatTableDataSource();
         this.route.navigate(["ventas/inicio"]);
       });
     }else{

@@ -21,7 +21,7 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
   ProductForm!: FormGroup;
-  @Input() EditordataInventario!: Inventario
+  @Input() EditordataInventario!: Inventario | undefined
   @Output() EditordataInventarioEvent = new EventEmitter<Inventario>();
   @Input() ListaInventario: Array<Inventario> = []
   @Output() ListaInventarioEvent = new EventEmitter<boolean>();
@@ -41,8 +41,8 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
   }
   ngOnChanges(changes: SimpleChanges): void {
     this.itemsProducto = []
-    if (changes["EditordataInventario"]?.currentValue) {
-      this.EditarForm(this.EditordataInventario)
+    if (changes["EditordataInventario"]?.currentValue !== undefined) {
+      this.EditarForm(this.EditordataInventario!)
       this.BotonCrearEditar = "Editar"
     } else {
       this.CrearForm()
@@ -152,7 +152,7 @@ export class CrearInventarioComponent implements OnInit, OnChanges {
   }
 
   ActualizarProduct() {
-    if (this.ProductForm.valid) {
+    if (this.ProductForm.valid && this.EditordataInventario) {
       let idProducto = this.EditordataInventario.producto.id || 0;
       let idInventario = this.EditordataInventario.id || 0;
       let producto = {

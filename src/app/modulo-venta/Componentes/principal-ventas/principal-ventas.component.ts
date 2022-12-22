@@ -23,7 +23,7 @@ export class PrincipalVentasComponent implements OnInit, OnDestroy {
     private __servicioInventario: InventarioService,
     private token: TokenServiceService,
     private _serviceData: DataMenuService,
-    private local: LocalstorageService,
+    private local: LocalstorageService
   ) {
   }
 
@@ -52,11 +52,13 @@ export class PrincipalVentasComponent implements OnInit, OnDestroy {
   }
 
   listarPollos(conCache: boolean): void {
-    this.__servicioInventario.listarpollo(conCache)
+    this.TiempoFuera = setTimeout(()=>{
+      this.__servicioInventario.listarpollo(conCache)
       .subscribe((data: updatePollo) => {
-        this._serviceData.SetPollo(data.pollo);
+        this._serviceData.SetPollo(data.pollo)
         this._serviceData.SetPresa(data.presa)
       })
+    })
   }
 
   detectarDispositivo(): boolean {

@@ -14,7 +14,7 @@ import { DataMenuService } from 'src/app/modulo-principal/Servicios/data-menu.se
 export class PrincipalInventarioComponent implements OnInit {
 
   PestanaIndex: number = 0
-  EditordataInventario!: Inventario
+  EditordataInventario!: Inventario | undefined
   ListaInventario: Array<Inventario> = []
 
   constructor(private dialogo: MatDialog,
@@ -42,7 +42,7 @@ export class PrincipalInventarioComponent implements OnInit {
   }
 
   SeleccionTabChange(event: MatTabChangeEvent): void {
-    if (this.EditordataInventario?.producto?.nombre?.length > 0 && this.PestanaIndex == 1) {
+    if (this.EditordataInventario && this.EditordataInventario.producto?.nombre?.length > 0 && this.PestanaIndex == 1) {
       this.dialogo.open(DialogoYesNoComponent, {
         data: {
           tipo: "¿Seguro desea salir del formulario?"
@@ -51,11 +51,7 @@ export class PrincipalInventarioComponent implements OnInit {
         if (data == "false")
           this.PestanaIndex = 0
         else {
-          this.EditordataInventario = {
-            cantidad: 0, cantidadExiste: 0, cantidadTotal: 0, extras: "", producto: {
-              nombre: "", tipo: "", precio: 0, presa: 0
-            }
-          }
+          this.EditordataInventario = undefined
         }
       })
     }

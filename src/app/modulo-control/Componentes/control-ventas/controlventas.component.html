@@ -48,7 +48,7 @@
               <mat-icon>import_export</mat-icon>
             </button>
             <div style="width: 100%; padding-bottom: 3%;" *ngIf="vista_dia">
-              <mat-checkbox style="margin-left: 2%;" *ngFor="let dia of semana; index as i" (change)="diaSeleccion($event)" [value]="dia">
+              <mat-checkbox style="margin-left: 2%;" *ngFor="let dia of semana" (change)="SeleccionCheck($event)" [checked]="dia === 'lunes'" [value]="dia">
                 {{dia}}
               </mat-checkbox>
             </div>
@@ -59,7 +59,7 @@
           </form>
     </mat-expansion-panel>
    
-    <table *ngIf="complete; else progress" mat-table [dataSource]="DataVentas" >
+    <table mat-table [dataSource]="DataVentas" >
   
       <!-- Name Column -->
       <ng-container matColumnDef="No">
@@ -110,16 +110,12 @@
        </div>
      </mat-card-content>
     </mat-card>
-  
-    <ng-template #progress >
-      <mat-spinner color="warn" style="margin: auto; margin-top: 50px;"></mat-spinner>
-    </ng-template>
   </mat-tab>
   <mat-tab>
     <ng-template mat-tab-label>
       Control Gastos
     </ng-template>
-    <app-control-gastos [ListaUser]="ListaUser"></app-control-gastos>
+    <app-control-gastos [ListaUser]="ListaUser" [valorGasto]="valorGasto"></app-control-gastos>
   </mat-tab>
   </mat-tab-group>
 

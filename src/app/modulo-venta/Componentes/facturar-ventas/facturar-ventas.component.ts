@@ -13,6 +13,7 @@ import { DataMenuService } from 'src/app/modulo-principal/Servicios/data-menu.se
 import { LocalstorageService } from 'src/app/modulo-principal/Servicios/localstorage.service';
 import { Producto } from 'src/app/modulo-inventario/Modelos/producto';
 import { Inventario } from 'src/app/modulo-inventario/Modelos/inventario';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-facturar-ventas',
@@ -24,14 +25,15 @@ export class FacturarVentasComponent implements OnInit {
   total: number = 0;
   valor: number = 0;
   DataCarrito: Array<Inventario> = []
-  displayedColumns = ['eliminar', 'nombre', 'restar', 'cantidad', 'sumar']
+  displayedColumns = ['eliminar', 'nombre', 'precio', 'restar', 'cantidad', 'sumar']
   factura?: Factura;
   listaFacturaItem: Array<FacturaItems> = []
-  numeroFactura: number = 0
+  numeroFactura$!:Observable<number>
   polloMerca: updatePollo = { pollo: 0, presa: 0 }
   bloqueo?: boolean;
 
-  constructor(private __servicioPagar: PagarService,
+  constructor(
+    private __servicioPagar: PagarService,
     private mensaje: ToastrService,
     private token: TokenServiceService,
     private route: Router,
@@ -42,57 +44,56 @@ export class FacturarVentasComponent implements OnInit {
   ngOnInit() {
     this.verificarCarrito();
     this.bloqueo = false;
-    this.ObtenerNumeroFactura()
+    this.ObtenerNumeroFactura(true)
     this.diaSemana();
   }
 
-  ObtenerNumeroFactura(): void {
-    this.numeroFactura = this.local.GetStorage("nfactura") as number
-    if (this.numeroFactura == 0) {
-      this.__servicioPagar.maximoValor()
-        .subscribe((data: number) => {
-          this.numeroFactura = data;
-          this.numeroFactura += 1;
-          this.local.SetStorage("nfactura", this.numeroFactura)
-        }, () => this.numeroFactura = 0)
-    }
+  ObtenerNumeroFactura(conCache:boolean): void {
+    this.numeroFactura$ = this.__servicioPagar.maximoValor(conCache)
   }
-  Facturar(): void {
+
+  Facturar() {
 
     if (this.DataCarrito.length > 0) {
-      this.polloMerca = this.local.GetStorage("pollos");
-      if (this.ValidarPollo()) {
-        for (let inventario of this.DataCarrito) {
-          this.listaFacturaItem.push({
-            cantidad: inventario.cantidad!,
-            extras: inventario.extras,
-            producto: inventario.producto,
-            Descuento: 0,
-            MontoPago: inventario.producto.precio
-          })
-        }
-        this.factura = {
-          numeroFactura: this.numeroFactura,
-          usuarioId: this.token.getUser(),
-          FormaPago: "Efectivo",
-          DiaIngreso: this.diaSemana(),
-          facturaItem: this.listaFacturaItem
-        }
-        this.__servicioPagar.pagar(this.factura)
-          .subscribe((data: Mensaje) => {
-            this.mensaje.success(data?.mensaje, "Exitoso");
-            this.local.RemoveStorage('DataCarrito');
-            this.__serviceInven.IngresarPolloView(this.polloMerca).subscribe(data => null)
-            this.local.SetStorage("nfactura", undefined)
-            this.__Data.Notificacion.emit(1);
-            this.route.navigate(['/inicio']);
-            this.bloqueo = false;
-          }, () => this.bloqueo = false);
+      this.__serviceInven.listarpollo(false).subscribe(data => {
+        this.polloMerca = data
+        this.listaFacturaItem = []
+        if (this.ValidarPollo()) {
+          for (let inventario of this.DataCarrito) {
+            this.listaFacturaItem.push({
+              cantidad: inventario.cantidad!,
+              extras: inventario.extras,
+              producto: inventario.producto,
+              descuento: 0,
+              montoPago: inventario.producto.precio
+            })
+          }
+          this.factura = {
+            usuario: this.token.getUser(),
+            formaPago: "efectivo",
+            fechaIngreso: new Date(),
+            diaIngreso: this.diaSemana(),
+            facturaItem: this.listaFacturaItem
+          }
+          this.__servicioPagar.pagar(this.factura)
+            .subscribe({
+              next: (data: Mensaje) => {
+                this.mensaje.success(data?.mensaje, "Exitoso");
+                this.local.RemoveStorage('DataCarrito');
+                this.__Data.Notificacion.emit(1);
+              },
+              complete: () => {
+                this.__serviceInven.IngresarPolloView(this.polloMerca).subscribe(() => this.route.navigate(['/inicio'])                )
+                this.ObtenerNumeroFactura(false)
+                this.bloqueo = false
+              }
+            });
 
-      } else {
-        this.mensaje.error("No existen pollos", "Error")
-        this.bloqueo = false
-      }
+        } else {
+          this.mensaje.error("No existen pollos", "Error")
+          this.bloqueo = false
+        }
+      });
     } else {
       this.mensaje.error("No existe productos en el carrito", "Error");
     }
@@ -110,12 +111,14 @@ export class FacturarVentasComponent implements OnInit {
       this.total = 0; this.valor = 0;
     }
   }
+
   Eliminar(index: number) {
     this.DataCarrito.splice(index, 1);
     this.local.SetStorage('DataCarrito', this.DataCarrito);
     this.verificarCarrito();
     this.__Data.Notificacion.emit(1);
   }
+
   sumar(index: number) {
     this.DataCarrito[index].cantidad!++;
     this.local.SetStorage('DataCarrito', this.DataCarrito);

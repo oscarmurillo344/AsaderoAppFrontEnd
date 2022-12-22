@@ -3,11 +3,11 @@ import { FacturaItems } from "./FacturaItems";
 export interface Factura{
 
     id?:number
-    numeroFactura:number
-    usuarioId:string
-    FormaPago:string
-    FechaIngreso?:Date
-    HoraIngreso?:Date
-    DiaIngreso:string
+    usuario:string
+    cliente?:any
+    formaPago:string
+    fechaIngreso?:Date
+    horaIngreso?:string
+    diaIngreso:string
     facturaItem:Array<FacturaItems>
 }

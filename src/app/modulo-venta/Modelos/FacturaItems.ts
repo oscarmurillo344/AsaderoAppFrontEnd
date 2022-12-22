@@ -5,6 +5,6 @@ export interface FacturaItems {
     cantidad:number
     extras:string;
     producto:Producto;
-    Descuento:number;
-    MontoPago:number;
+    descuento:number;
+    montoPago:number;
 }
