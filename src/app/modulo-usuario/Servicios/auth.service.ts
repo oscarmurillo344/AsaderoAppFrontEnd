@@ -3,12 +3,12 @@ import { HttpClient } from '@angular/common/http';
 
 import { LoginUsuario } from "../Modelos/loginUsuario";
 import { BehaviorSubject, map, Observable } from 'rxjs';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 import { Mensaje } from 'src/app/modulo-principal/Modelos/mensaje';
 import { Usuario } from '../Modelos/Usuario';
 import { NuevoUsuario } from '../Modelos/nuevoUsuario';
 
-const authURL: string = environment.UrlDesarrollo+"usuario/";
+const authURL: string = environment.UrlServer+"usuario/";
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +29,7 @@ export class AuthService {
    params.set("grant_type","password")
    params.set("username",login.username)
    params.set("password",login.password)
-    return this.http.post<any>(`${environment.UrlDesarrollo}oauth/token`,params.toString());
+    return this.http.post<any>(`${environment.UrlServer}oauth/token`,params.toString());
   }
 
   public ListarUsuario():Observable<Usuario[]>{

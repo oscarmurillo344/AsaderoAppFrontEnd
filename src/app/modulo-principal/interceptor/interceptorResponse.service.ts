@@ -32,11 +32,13 @@ export class InterceptorResponse implements HttpInterceptor {
             }
             if(e.error?.mensaje)
             this.mensaje.error(e.error.mensaje,"Error")
-            else{
+            if(e.error?.error_description)
+              this.mensaje.error(e.error.error_description,"Error")
+             else{
               this.mensaje.error("Error en la consulta","Error")
               console.log(e)
             }
-            return throwError(e)
+            return throwError(()=>e)
        })
    );
   }

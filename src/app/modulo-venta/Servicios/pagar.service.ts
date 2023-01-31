@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Factura } from '../Modelos/factura';
 import { BehaviorSubject, map, Observable } from 'rxjs';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 import { Mensaje } from 'src/app/modulo-principal/Modelos/mensaje';
 import { EntreFecha } from 'src/app/modulo-control/Modelos/EntreFecha';
 import { VentasDay } from 'src/app/modulo-control/Modelos/VentasDay';
 
-const pagarURL= `${environment.UrlDesarrollo}factura/`;
+const pagarURL= `${environment.UrlServer}factura/`;
 
 @Injectable({
   providedIn: 'root'

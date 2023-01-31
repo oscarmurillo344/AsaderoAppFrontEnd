@@ -2,12 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { Mensaje } from 'src/app/modulo-principal/Modelos/mensaje';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 import { Gastos } from '../Modelos/gastos';
 import { GastosX } from '../Modelos/gastosX';
 
 
-const URLgasto=environment.UrlDesarrollo+"gastos/";
+const URLgasto=environment.UrlServer+"gastos/";
 @Injectable({
   providedIn: 'root'
 })

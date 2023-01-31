@@ -1,12 +1,12 @@
-import { EventEmitter, Injectable, Output } from '@angular/core';
+import {  Injectable, Output } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { Inventario } from '../Modelos/inventario';
 import { updatePollo } from '../Modelos/updatePollo';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 import { Mensaje } from 'src/app/modulo-principal/Modelos/mensaje';
 
-const UrlInventario = environment.UrlDesarrollo + "inventario/";
+const UrlInventario = environment.UrlServer + "inventario/";
 
 @Injectable({
   providedIn: 'root'
